@@ -1,0 +1,18 @@
+{
+    "name": "ZeroPercentInternalization.Editor",
+    "rootNamespace": "ZeroPercentInternalization.Editor",
+    "references": [
+        "GUID:efc498ceadcb56a47ae2724e665f609b"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
