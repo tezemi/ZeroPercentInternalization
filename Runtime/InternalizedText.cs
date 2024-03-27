@@ -8,8 +8,7 @@ namespace ZeroPercentInternalization
 	public class InternalizedText : ScriptableObject
 	{
 		public Language Language;
-		public List<string> Keys;
-		public List<string> Values;
+		public List<TextEntry> TextEntries;
 	}
 }
 

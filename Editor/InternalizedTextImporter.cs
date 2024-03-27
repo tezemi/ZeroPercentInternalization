@@ -28,15 +28,14 @@ namespace ZeroPercentInternalization.Editor
 			    try
 			    {
 					// Can't deserialize scriptable objects directly, so create this temp object first
-				    var definition = new { Language = Language.NONE, Keys = new List<string>(), Values = new List<string>() };
+				    var definition = new { Language = Language.NONE, TextEntries = new List<TextEntry>() };
 				    var temp = JsonConvert.DeserializeAnonymousType(json, definition);
 
 				    asset = ScriptableObject.CreateInstance<InternalizedText>();
 
 				    asset.Language = temp.Language;
-				    asset.Keys = temp.Keys;
-				    asset.Values = temp.Values;
-				}
+				    asset.TextEntries = new List<TextEntry>(temp.TextEntries);
+			    }
 			    catch (Exception e)
 			    {
 				    context.LogImportError($"Could not read internalized text '{context.assetPath}'. It could be malformed. {Environment.NewLine}{e}");

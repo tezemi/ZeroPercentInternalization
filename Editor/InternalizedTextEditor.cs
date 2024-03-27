@@ -24,22 +24,33 @@ namespace ZeroPercentInternalization.Editor
 
 			var text = (InternalizedText)target;
 
+			Color initialTextColor = GUI.color;
+
 			if (_isInvalid)
 			{
-				Color initialTextColor = GUI.color;
 				GUI.color = Color.red;
 				EditorGUILayout.LabelField("Duplicate key names are not allowed.");
 				GUI.color = initialTextColor;
 			}
 
+			if (text.Language == Language.NONE)
+			{
+				GUI.color = Color.yellow;
+				EditorGUILayout.LabelField("A language should be specified.");
+				GUI.color = initialTextColor;
+			}
+
+			if (text.Language == Language.NONE)
+				GUI.backgroundColor = Color.yellow;
 			text.Language = (Language)EditorGUILayout.EnumPopup("Language", text.Language);
+			GUI.backgroundColor = initialTextColor;
 
 			GUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Keys", EditorStyles.boldLabel, GUILayout.Width(128f));
 			EditorGUILayout.LabelField("Values", EditorStyles.boldLabel, GUILayout.Width(128f));
 			GUILayout.EndHorizontal();
 
-			for (var i = 0; i < text.Keys.Count; i++)
+			for (var i = 0; i < text.TextEntries.Count; i++)
 			{
 				GUILayout.BeginHorizontal();
 
@@ -47,20 +58,19 @@ namespace ZeroPercentInternalization.Editor
 				Color initialBackgroundColor = GUI.backgroundColor;
 				if (_invalidKeyIndices.Contains(i))
 					GUI.backgroundColor = Color.red;
-				text.Keys[i] = GUILayout.TextField(text.Keys[i], GUILayout.Width(128f));
+				text.TextEntries[i].Key = GUILayout.TextField(text.TextEntries[i].Key, GUILayout.Width(128f));
 				GUI.backgroundColor = initialBackgroundColor;
 
 				// More complex text area for values
-				var valueGUIContent = new GUIContent(text.Values[i]);
+				var valueGUIContent = new GUIContent(text.TextEntries[i].Value);
 				var textAreaGUIStyle = new GUIStyle(EditorStyles.textArea);
 				textAreaGUIStyle.CalcHeight(valueGUIContent, 0f);	// width is irrelevant
 				textAreaGUIStyle.wordWrap = true;
-				text.Values[i] = GUILayout.TextArea(text.Values[i], textAreaGUIStyle);
+				text.TextEntries[i].Value = GUILayout.TextArea(text.TextEntries[i].Value, textAreaGUIStyle);
 
 				if (GUILayout.Button("-", GUILayout.Width(20f)))
 				{
-					text.Keys.RemoveAt(i);
-					text.Values.RemoveAt(i);
+					text.TextEntries.RemoveAt(i);
 				}
 
 				GUILayout.EndHorizontal();
@@ -71,8 +81,7 @@ namespace ZeroPercentInternalization.Editor
 
 			if (GUILayout.Button("+", GUILayout.Width(20f)))
 			{
-				text.Keys.Add("NewKey");
-				text.Values.Add(string.Empty);
+				text.TextEntries.Add(new TextEntry());
 			}
 
 			GUILayout.EndHorizontal();
@@ -97,11 +106,11 @@ namespace ZeroPercentInternalization.Editor
 		private void TestIsInvalid(InternalizedText text)
 		{
 			_invalidKeyIndices.Clear();
-			for (var i = 0; i < text.Keys.Count; i++)
+			for (var i = 0; i < text.TextEntries.Count; i++)
 			{
-				for (var j = i + 1; j < text.Keys.Count; j++)
+				for (var j = i + 1; j < text.TextEntries.Count; j++)
 				{
-					if (text.Keys[i] == text.Keys[j])
+					if (text.TextEntries[i].Key == text.TextEntries[j].Key)
 					{
 						_invalidKeyIndices.Add(i);
 						_invalidKeyIndices.Add(j);

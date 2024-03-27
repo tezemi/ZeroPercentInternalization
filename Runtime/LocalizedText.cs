@@ -33,7 +33,7 @@ namespace ZeroPercentInternalization
 				Text = GetComponent<Text>();
 
 			if (InternalizedText != null)
-				Text.text = InternalizedText.Values[SelectedKeyIndex];
+				Text.text = InternalizedText.TextEntries[SelectedKeyIndex].Value;
 		}
 	}
 }
