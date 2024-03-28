@@ -8,9 +8,28 @@ namespace ZeroPercentInternalization
 	public class LocalizedText : MonoBehaviour
 	{
 		[HideInInspector]
-		public int SelectedKeyIndex;
+		public string SelectedKey;
 		public InternalizedText InternalizedText;
 		public Text Text { get; private set; }
+
+		public int SelectedKeyIndex
+		{
+			get
+			{
+				int i = 0;
+				foreach (var entry in InternalizedText.TextEntries)
+				{
+					if (entry.Key == SelectedKey)
+					{
+						return i;
+					}
+
+					i++;
+				}
+
+				return 0;
+			}
+		}
 
 		protected virtual void Awake()
 		{
@@ -32,8 +51,8 @@ namespace ZeroPercentInternalization
 			if (Text == null)
 				Text = GetComponent<Text>();
 
-			if (InternalizedText != null)
-				Text.text = InternalizedText.TextEntries[SelectedKeyIndex].Value;
+			if (InternalizedText != null && !string.IsNullOrEmpty(SelectedKey))
+				Text.text = InternalizedText.GetValue(SelectedKey);
 		}
 	}
 }
