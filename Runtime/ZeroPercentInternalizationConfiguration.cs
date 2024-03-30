@@ -1,4 +1,4 @@
-﻿using UnityEditor;
+﻿using UnityEngine;
 
 namespace ZeroPercentInternalization
 {
@@ -8,23 +8,11 @@ namespace ZeroPercentInternalization
 		{
 			get
 			{
-				return (Language)EditorPrefs.GetInt(GetKey(nameof(Language)), (int)Language.EN);
+				return (Language)PlayerPrefs.GetInt(GetKey(nameof(Language)), (int)Language.EN);
 			}
 			set
 			{
-				EditorPrefs.SetInt(GetKey(nameof(Language)), (int)value);
-			}
-		}
-
-		public static string RelativeTextPath
-		{
-			get
-			{
-				return EditorPrefs.GetString(GetKey(nameof(RelativeTextPath)), "Text");
-			}
-			set
-			{
-				EditorPrefs.SetString(GetKey(nameof(RelativeTextPath)), value);
+				PlayerPrefs.SetInt(GetKey(nameof(Language)), (int)value);
 			}
 		}
 
