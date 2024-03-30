@@ -1,0 +1,24 @@
+{
+	"name": "com.tezemi.zeropercentinternalization",
+	"version": "0.1.0",
+	"displayName": "Zero Percent Internalization",
+	"description": "Lightweight text internalization/localization library for Unity.",
+	"unity": "2019.1",
+	"dependencies": 
+	{
+		"com.unity.ugui": "1.0.0",
+		"com.unity.textmeshpro": "3.0.6"
+	},
+	"keywords": 
+	[
+		"internalization",
+		"localization",
+		"text"
+	],
+	"author": 
+	{
+		"name": "Tezemi",
+		"email": "tezemi.mail@gmail.com",
+		"url": "https://github.com/tezemi"
+	}
+}
