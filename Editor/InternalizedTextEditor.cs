@@ -45,6 +45,8 @@ namespace ZeroPercentInternalization.Editor
 			{
 				text.AddLanguageMap(newLanguage);
 
+				_selectedLanguageIndex = text.Languages.Count - 1;
+
 				SaveToDisk();
 
 				return;
@@ -57,7 +59,10 @@ namespace ZeroPercentInternalization.Editor
 					    "Yes", "Cancel")) 
 				{
 					text.RemoveLanguageMap(text.Languages[_selectedLanguageIndex]);
-					_selectedLanguageIndex = 0;
+					_selectedLanguageIndex--;
+
+					if (_selectedLanguageIndex < 0)
+						_selectedLanguageIndex = 0;
 
 					SaveToDisk();
 
@@ -144,6 +149,9 @@ namespace ZeroPercentInternalization.Editor
 		{
 			var text = (InternalizedText)target;
 			_invalidKeyIndices.Clear();
+
+			if (!text.Languages.Any())
+				return;
 
 			var keys = text.GetKeys();
 			for (var i = 0; i < keys.Length; i++)

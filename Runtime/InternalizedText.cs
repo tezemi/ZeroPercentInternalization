@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Newtonsoft.Json;
 
@@ -15,6 +16,23 @@ namespace ZeroPercentInternalization
 		private List<LanguageMap> _languageMaps = new List<LanguageMap>();
 		private readonly Dictionary<string, string> _keyToValueCache = new Dictionary<string, string>();
 		private readonly Dictionary<Language, List<TextEntry>> _languageToTextCache = new Dictionary<Language, List<TextEntry>>();
+
+		protected virtual void OnValidate()
+		{
+			if (!Languages.Any())
+				return;
+
+			var keyCount = _languageMaps[0].TextEntries.Count;
+
+			foreach (var languageMap in _languageMaps)
+			{
+				if (languageMap.TextEntries.Count != keyCount)
+				{
+					Debug.LogError($"Language '{languageMap.Language}' on '{name}' has an incorrect number of keys. " +
+					               $"If you edited the JSON directly, make sure that every language has the same number of keys.", this);
+				}
+			}
+		}
 
 		public string GetValue(string key)
 		{
@@ -100,30 +118,23 @@ namespace ZeroPercentInternalization
 
 		public string[] GetKeys()
 		{
-			var language = ZeroPercentInternalizationConfiguration.Language;
-
-			foreach (var languageMap in _languageMaps)
+			if (!Languages.Any())
 			{
-				if (languageMap.Language == language)
-				{
-					List<TextEntry> textEntries = languageMap.TextEntries;
-
-					var keys = new string[textEntries.Count];
-					for (var i = 0; i < textEntries.Count; i++)
-					{
-						var entry = textEntries[i];
-						keys[i] = entry.Key;
-					}
-
-					return keys;
-				}
+				Debug.LogWarning($"Can't get keys for '{name}'. There are no languages.", this);
 			}
 
-			Debug.LogWarning($"Could not get keys for language '{language}' on {name}.", this);
+			List<TextEntry> textEntries = _languageMaps[0].TextEntries;
 
-			return Array.Empty<string>();
+			var keys = new string[textEntries.Count];
+			for (var i = 0; i < textEntries.Count; i++)
+			{
+				var entry = textEntries[i];
+				keys[i] = entry.Key;
+			}
+
+			return keys;
 		}
-
+		
 		public void Initialize(List<LanguageMap> languageMaps)
 		{
 			Languages.Clear();
@@ -155,7 +166,14 @@ namespace ZeroPercentInternalization
 		{
 			foreach (var languageMap in _languageMaps)
 			{
-				languageMap.TextEntries.RemoveAt(index);
+				try
+				{
+					languageMap.TextEntries.RemoveAt(index);
+				}
+				catch (ArgumentOutOfRangeException)
+				{
+					Debug.LogError($"Couldn't remove a key on language '{languageMap.Language}' for '{name}'. The data may be malformed.", this);
+				}
 			}
 		}
 		
