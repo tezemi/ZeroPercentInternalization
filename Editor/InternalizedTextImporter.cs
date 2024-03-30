@@ -28,13 +28,12 @@ namespace ZeroPercentInternalization.Editor
 			    try
 			    {
 					// Can't deserialize scriptable objects directly, so create this temp object first
-				    var definition = new { Language = Language.NONE, TextEntries = new List<TextEntry>() };
+				    var definition = new { _languageMaps = new List<LanguageMap>() };
 				    var temp = JsonConvert.DeserializeAnonymousType(json, definition);
 
 				    asset = ScriptableObject.CreateInstance<InternalizedText>();
 
-				    asset.Language = temp.Language;
-				    asset.TextEntries = new List<TextEntry>(temp.TextEntries);
+				    asset.Initialize(temp._languageMaps);
 			    }
 			    catch (Exception e)
 			    {

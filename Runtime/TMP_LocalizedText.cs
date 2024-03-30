@@ -1,17 +1,17 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 namespace ZeroPercentInternalization
 {
 	[ExecuteAlways]
-	[RequireComponent(typeof(Text))]
-	[AddComponentMenu("Zero Percent Localization/Localized Text", 1)]
-	public class LocalizedText : MonoBehaviour
+	[RequireComponent(typeof(TMP_Text))]
+	[AddComponentMenu("Zero Percent Localization/Localized Text (TextMeshPro)", 2)]
+	public class TMP_LocalizedText : MonoBehaviour
 	{
 		[HideInInspector]
 		public string SelectedKey;
 		public InternalizedText InternalizedText;
-		public Text Text { get; private set; }
+		public TMP_Text Text { get; private set; }
 
 		public int SelectedKeyIndex
 		{
@@ -34,7 +34,7 @@ namespace ZeroPercentInternalization
 
 		protected virtual void Awake()
 		{
-			Text = GetComponent<Text>();
+			Text = GetComponent<TMP_Text>();
 		}
 
 		protected virtual void OnEnable()
@@ -50,7 +50,7 @@ namespace ZeroPercentInternalization
 		public void SetTextToSelectedValue()
 		{
 			if (Text == null)
-				Text = GetComponent<Text>();
+				Text = GetComponent<TMP_Text>();
 
 			if (InternalizedText != null && !string.IsNullOrEmpty(SelectedKey))
 				Text.text = InternalizedText.GetValue(SelectedKey);

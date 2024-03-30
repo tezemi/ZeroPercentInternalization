@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
+using UnityEditor;
 using Newtonsoft.Json;
 
 namespace ZeroPercentInternalization.Editor
@@ -11,11 +11,12 @@ namespace ZeroPercentInternalization.Editor
 	public class InternalizedTextEditor : UnityEditor.Editor
 	{
 		private readonly List<int> _invalidKeyIndices = new List<int>();
-		private bool _isInvalid => _invalidKeyIndices.Any();
+		private int _selectedLanguageIndex;
+		private bool _hasInvalidKeys => _invalidKeyIndices.Any();
 
 		protected virtual void OnEnable()
 		{
-			TestIsInvalid((InternalizedText)target);
+			TestIsInvalid();
 		}
 
 		public override void OnInspectorGUI()
@@ -24,53 +25,89 @@ namespace ZeroPercentInternalization.Editor
 
 			var text = (InternalizedText)target;
 
+			// Begin errors and warnings
 			Color initialTextColor = GUI.color;
-
-			if (_isInvalid)
+			if (_hasInvalidKeys)
 			{
 				GUI.color = Color.red;
 				EditorGUILayout.LabelField("Duplicate key names are not allowed.");
 				GUI.color = initialTextColor;
 			}
 
-			if (text.Language == Language.NONE)
+			// The language header
+			// Shows the selected language, and buttons for adding and removing languages
+			GUILayout.BeginHorizontal();
+			var languageNames = text.Languages.Select(l => l.ToString()).ToArray();
+			_selectedLanguageIndex = EditorGUILayout.Popup("Language", _selectedLanguageIndex, languageNames);
+
+			var newLanguage = (Language)EditorGUILayout.EnumPopup(Language.NONE, GUILayout.Width(20f));
+			if (newLanguage != Language.NONE && !text.Languages.Contains(newLanguage))
 			{
-				GUI.color = Color.yellow;
-				EditorGUILayout.LabelField("A language should be specified.");
-				GUI.color = initialTextColor;
+				text.AddLanguageMap(newLanguage);
+
+				SaveToDisk();
+
+				return;
 			}
 
-			if (text.Language == Language.NONE)
-				GUI.backgroundColor = Color.yellow;
-			text.Language = (Language)EditorGUILayout.EnumPopup("Language", text.Language);
-			GUI.backgroundColor = initialTextColor;
+			if (GUILayout.Button("-", GUILayout.Width(20f)))
+			{
+				if (EditorUtility.DisplayDialog("Delete Language",
+					    "Do you want to delete this language? It will delete every text entry associated with it.",
+					    "Yes", "Cancel")) 
+				{
+					text.RemoveLanguageMap(text.Languages[_selectedLanguageIndex]);
+					_selectedLanguageIndex = 0;
 
+					SaveToDisk();
+
+					return;
+				}
+			}
+
+			GUILayout.EndHorizontal();
+
+			// If there are no languages, don't render anything
+			if (!text.Languages.Any())
+				return;
+
+			// Text entry list starts here
 			GUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Keys", EditorStyles.boldLabel, GUILayout.Width(128f));
 			EditorGUILayout.LabelField("Values", EditorStyles.boldLabel, GUILayout.Width(128f));
 			GUILayout.EndHorizontal();
 
-			for (var i = 0; i < text.TextEntries.Count; i++)
+			Language selectedLanguage = text.Languages[_selectedLanguageIndex];
+			List<TextEntry> textEntries = text.GetTextEntriesForLanguage(selectedLanguage);
+
+			for (var i = 0; i < textEntries.Count; i++)
 			{
 				GUILayout.BeginHorizontal();
 
 				// Simple text box for key
 				Color initialBackgroundColor = GUI.backgroundColor;
+
 				if (_invalidKeyIndices.Contains(i))
 					GUI.backgroundColor = Color.red;
-				text.TextEntries[i].Key = GUILayout.TextField(text.TextEntries[i].Key, GUILayout.Width(128f));
+
+				var newKey = GUILayout.TextField(textEntries[i].Key, GUILayout.Width(128f));
+				
+				if (textEntries[i].Key != newKey)
+					text.UpdateKeyForAllLanguages(i, newKey);
+
 				GUI.backgroundColor = initialBackgroundColor;
 
 				// More complex text area for values
-				var valueGUIContent = new GUIContent(text.TextEntries[i].Value);
+				var value = textEntries[i].Value;
+				var valueGUIContent = new GUIContent(value);
 				var textAreaGUIStyle = new GUIStyle(EditorStyles.textArea);
 				textAreaGUIStyle.CalcHeight(valueGUIContent, 0f);	// width is irrelevant
 				textAreaGUIStyle.wordWrap = true;
-				text.TextEntries[i].Value = GUILayout.TextArea(text.TextEntries[i].Value, textAreaGUIStyle);
+				textEntries[i].Value = GUILayout.TextArea(value, textAreaGUIStyle);
 
 				if (GUILayout.Button("-", GUILayout.Width(20f)))
 				{
-					text.TextEntries.RemoveAt(i);
+					text.RemoveKeyForAllLanguages(i);
 				}
 
 				GUILayout.EndHorizontal();
@@ -81,19 +118,19 @@ namespace ZeroPercentInternalization.Editor
 
 			if (GUILayout.Button("+", GUILayout.Width(20f)))
 			{
-				text.TextEntries.Add(new TextEntry());
+				text.AddKeyForAllLanguages();
 			}
 
 			GUILayout.EndHorizontal();
 
+			// If something has changed, make sure it's invalid, then save to the disk, and update scene
 			if (GUI.changed)
 			{
-				TestIsInvalid(text);
+				TestIsInvalid();
 
-				var json = JsonConvert.SerializeObject(text, Formatting.Indented);
-				File.WriteAllText(AssetDatabase.GetAssetPath(text), json);
+				SaveToDisk();
 
-				if (!_isInvalid)
+				if (!_hasInvalidKeys)
 				{
 					foreach (var localizedText in FindObjectsOfType<LocalizedText>())
 					{
@@ -103,20 +140,30 @@ namespace ZeroPercentInternalization.Editor
 			}
 		}
 
-		private void TestIsInvalid(InternalizedText text)
+		private void TestIsInvalid()
 		{
+			var text = (InternalizedText)target;
 			_invalidKeyIndices.Clear();
-			for (var i = 0; i < text.TextEntries.Count; i++)
+
+			var keys = text.GetKeys();
+			for (var i = 0; i < keys.Length; i++)
 			{
-				for (var j = i + 1; j < text.TextEntries.Count; j++)
+				for (var j = i + 1; j < keys.Length; j++)
 				{
-					if (text.TextEntries[i].Key == text.TextEntries[j].Key)
+					if (keys[i] == keys[j])
 					{
 						_invalidKeyIndices.Add(i);
 						_invalidKeyIndices.Add(j);
 					}
 				}
 			}
+		}
+
+		private void SaveToDisk()
+		{
+			var text = (InternalizedText)target;
+			var json = JsonConvert.SerializeObject(text, Formatting.Indented);
+			File.WriteAllText(AssetDatabase.GetAssetPath(text), json);
 		}
 	}
 }
