@@ -41,7 +41,7 @@ namespace ZeroPercentInternalization.Editor
 			    }
 		    }
 
-		    context.AddObjectToAsset("<root>", asset, null);
+		    context.AddObjectToAsset("<root>", asset, (Texture2D)EditorGUIUtility.Load("Assets/Scripts/Sprites/SpriteInternalizedText.png"));
 			context.SetMainObject(asset);
 	    }
 
@@ -51,7 +51,8 @@ namespace ZeroPercentInternalization.Editor
 		    ProjectWindowUtil.CreateAssetWithContent
 		    (
 			    "NewInternalizedText." + FileExtension,
-				string.Empty
+				string.Empty,
+				(Texture2D)EditorGUIUtility.Load("Assets/Scripts/Sprites/SpriteInternalizedText.png")
 		    );
 	    }
 	}
