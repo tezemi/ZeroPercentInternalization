@@ -41,7 +41,7 @@ namespace ZeroPercentInternalization.Editor
 			    }
 		    }
 
-		    context.AddObjectToAsset("<root>", asset, (Texture2D)EditorGUIUtility.Load("Assets/Scripts/Sprites/SpriteInternalizedText.png"));
+		    context.AddObjectToAsset("<root>", asset, AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.tezemi.zeropercentinternalization/Sprites/SpriteInternalizedText"));
 			context.SetMainObject(asset);
 	    }
 
@@ -52,7 +52,7 @@ namespace ZeroPercentInternalization.Editor
 		    (
 			    "NewInternalizedText." + FileExtension,
 				string.Empty,
-				(Texture2D)EditorGUIUtility.Load("Assets/Scripts/Sprites/SpriteInternalizedText.png")
+				AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.tezemi.zeropercentinternalization/Sprites/SpriteInternalizedText")
 		    );
 	    }
 	}
