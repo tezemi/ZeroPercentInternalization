@@ -141,6 +141,11 @@ namespace ZeroPercentInternalization.Editor
 					{
 						localizedText.SetTextToSelectedValue();
 					}
+
+					foreach (var localizedText in FindObjectsOfType<TMP_LocalizedText>())
+					{
+						localizedText.SetTextToSelectedValue();
+					}
 				}
 			}
 		}
