@@ -12,5 +12,7 @@ namespace ZeroPercentInternalization
 		{
 			return InternalizedText.GetValue(Key);
 		}
+
+		public static implicit operator string (LocalizedString l) => l.ToString();
 	}
 }

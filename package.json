@@ -1,6 +1,6 @@
 {
 	"name": "com.tezemi.zeropercentinternalization",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"displayName": "Zero Percent Internalization",
 	"description": "Lightweight text internalization/localization library for Unity.",
 	"unity": "2019.1",
