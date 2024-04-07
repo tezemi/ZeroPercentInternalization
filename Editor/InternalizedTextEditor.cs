@@ -108,6 +108,7 @@ namespace ZeroPercentInternalization.Editor
 				var textAreaGUIStyle = new GUIStyle(EditorStyles.textArea);
 				textAreaGUIStyle.CalcHeight(valueGUIContent, 0f);	// width is irrelevant
 				textAreaGUIStyle.wordWrap = true;
+				GUI.SetNextControlName($"TextArea{i}");
 				textEntries[i].Value = GUILayout.TextArea(value, textAreaGUIStyle);
 
 				if (GUILayout.Button("-", GUILayout.Width(20f)))
@@ -121,7 +122,12 @@ namespace ZeroPercentInternalization.Editor
 			GUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
 
-			if (GUILayout.Button("+", GUILayout.Width(20f)))
+			var tabOnLastEntry = Event.current.isKey &&
+			                     Event.current.keyCode == KeyCode.Tab &&
+								 Event.current.type == EventType.KeyDown && 
+			                     GUI.GetNameOfFocusedControl() == $"TextArea{(textEntries.Count - 1)}";
+
+			if (GUILayout.Button("+", GUILayout.Width(20f)) || tabOnLastEntry)
 			{
 				text.AddKeyForAllLanguages();
 			}
