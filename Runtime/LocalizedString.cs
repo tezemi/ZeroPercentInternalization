@@ -7,6 +7,7 @@ namespace ZeroPercentInternalization
 	{
 		public InternalizedText InternalizedText;
 		public string Key;
+		public bool IsValid => InternalizedText != null && !string.IsNullOrEmpty(Key);
 
 		public override string ToString()
 		{
