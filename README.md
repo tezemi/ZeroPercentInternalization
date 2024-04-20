@@ -140,7 +140,6 @@ Most of these properties are not important when it comes to translating. You'll 
 
 ## Language Code List
 ```CS
-NONE,
 AF,
 SQ,
 AR_DZ,
