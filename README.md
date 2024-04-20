@@ -35,7 +35,7 @@ Here's an example:
 
 Click the minus button to remove a key if needed.
 
-Now that there's two values for english, you can add as many languages as desired. Click on the down arrow again, and select another language code.
+Now that there's two values for English, you can add as many languages as desired. Click on the down arrow again, and select another language code.
 
 ![image](https://github.com/tezemi/ZeroPercentInternalization/assets/59236027/da78527b-b65f-42a5-a8d3-c7bc275c452a)
 
@@ -80,8 +80,192 @@ This line will change the language to French. It will also update all Localized 
 ![GIF2](https://github.com/tezemi/ZeroPercentInternalization/assets/59236027/46430e92-74e7-48c1-9b51-61f56ecbc7e8)
 
 ## Changing the Default Language
-`// TODO`
+The default language is English, so if you want the default language to be English, you won't need to change anything. If you want a different language, however, the method is fairly straightforward. When your game starts, run the following code:
+```CS
+if (!PlayerPrefs.HasKey("ZeroPercentInternalizationConfiguration.Language"))
+{
+  ZeroPercentInternalizationConfiguration.Language = Language.JA;
+}
+```
+This will check to see if the language key has been set, if not, it will set it to the new language, effectively changing the default language for the game. Where you choose to do this is up to you, but a method that gets run once when the game starts is best, for example:
+```CS
+[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+private static void Startup()
+{
+  // ...
+}
+```
 
+## Editing Text Directly (JSON)
+If you or someone on your team doesn't want to use Unity, you can .zpit files directly. This is what one looks like:
+```JSON
+{
+  "Languages": [
+    32,
+    50
+  ],
+  "_languageMaps": [
+    {
+      "Language": "EN",
+      "TextEntries": [
+        {
+          "Key": "NewKey0",
+          "Value": "Hello"
+        },
+        {
+          "Key": "NewKey1",
+          "Value": "World!"
+        }
+      ]
+    },
+    {
+      "Language": "FR",
+      "TextEntries": [
+        {
+          "Key": "NewKey0",
+          "Value": "Hello in French"
+        },
+        {
+          "Key": "NewKey1",
+          "Value": "World! in French"
+        }
+      ]
+    }
+  ],
+  "name": "NewInternalizedText",
+  "hideFlags": 8
+}
+```
+Most of these properties are not important when it comes to translating. You'll only need to change what's inside the "_languageMaps" array. Each element will start with a "Language" property, followed by the language code. Just like with editing in Unity, the "keys" need to stay the same across all languages, but the values are what will be changed per language.
+
+## Language Code List
+```CS
+NONE,
+AF,
+SQ,
+AR_DZ,
+AR_BH,
+AR_EG,
+AR_IQ,
+AR_JO,
+AR_KW,
+AR_LB,
+AR_LY,
+AR_MA,
+AR_OM,
+AR_QA,
+AR_SA,
+AR_SY,
+AR_TN,
+AR_AE,
+AR_YE,
+EU,
+BE,
+BG,
+CA,
+ZH_HK,
+ZH_CN,
+ZH_SG,
+ZH_TW,
+HR,
+CS,
+DA,
+NL_BE,
+NL,
+EN,
+EN_AU,
+EN_BZ,
+EN_CA,
+EN_IE,
+EN_JM,
+EN_NZ,
+EN_ZA,
+EN_TT,
+EN_GB,
+EN_US,
+ET,
+FO,
+FA,
+FI,
+FR_BE,
+FR_CA,
+FR_LU,
+FR,
+FR_CH,
+GD,
+DE_AT,
+DE_LI,
+DE_LU,
+DE,
+DE_CH,
+EL,
+HE,
+HI,
+HU,
+IS,
+ID,
+GA,
+IT,
+IT_CH,
+JA,
+KO,
+KU,
+LV,
+LT,
+MK,
+ML,
+MS,
+MT,
+NO,
+NB,
+NN,
+PL,
+PT_BR,
+PT,
+PA,
+RM,
+RO,
+RO_MD,
+RU,
+RU_MD,
+SR,
+SK,
+SL,
+SB,
+ES_AR,
+ES_BO,
+ES_CL,
+ES_CO,
+ES_CR,
+ES_DO,
+ES_EC,
+ES_SV,
+ES_GT,
+ES_HN,
+ES_MX,
+ES_NI,
+ES_PA,
+ES_PY,
+ES_PE,
+ES_PR,
+ES,
+ES_UY,
+ES_VE,
+SV,
+SV_FI,
+TH,
+TS,
+TN,
+TR,
+UK,
+UR,
+VE,
+VI,
+CY,
+XH,
+JI,
+ZU
+```
 
 
 
