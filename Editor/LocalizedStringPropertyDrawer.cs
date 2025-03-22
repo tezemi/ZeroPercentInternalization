@@ -46,7 +46,14 @@ namespace ZeroPercentInternalization.Editor
 					selectedIndex = 0;
 				}
 
-				keyProperty.stringValue = keys[EditorGUI.Popup(keyRect, selectedIndex, keys)];
+				GUIContent[] guiContents = new GUIContent[keys.Length];
+				for (int i = 0; i < keys.Length; i++)
+				{
+					string key = keys[i];
+					guiContents[i] = new GUIContent(key, internalizedText.GetValue(key));
+				}
+
+				keyProperty.stringValue = keys[EditorGUI.Popup(keyRect, selectedIndex, guiContents)];
 			}
 
 			EditorGUI.EndProperty();
