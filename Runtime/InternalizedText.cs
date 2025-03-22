@@ -1,6 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using Newtonsoft.Json;
 
@@ -158,7 +159,16 @@ namespace ZeroPercentInternalization
 		{
 			foreach (var languageMap in _languageMaps)
 			{
-				languageMap.TextEntries.Add(new TextEntry { Key = $"NewKey{languageMap.TextEntries.Count}" });
+				string keyName = $"NewKey{languageMap.TextEntries.Count:D2}";
+				if (languageMap.TextEntries.Count > 0)
+					keyName = Regex.Replace
+					(
+						languageMap.TextEntries.Last().Key, 
+						"[0-9]+$", 
+						n => (Convert.ToInt32(n.Value) + 1).ToString("D2")
+					);
+
+				languageMap.TextEntries.Add(new TextEntry { Key = keyName });
 			}
 		}
 
@@ -176,7 +186,26 @@ namespace ZeroPercentInternalization
 				}
 			}
 		}
-		
+
+		public void SwapKeyIndicesForAllLanguages(int index1, int index2)
+		{
+			foreach (var languageMap in _languageMaps)
+			{
+				try
+				{
+					TextEntry entry1 = languageMap.TextEntries[index1];
+					TextEntry entry2 = languageMap.TextEntries[index2];
+
+					languageMap.TextEntries[index1] = entry2;
+					languageMap.TextEntries[index2] = entry1;
+				}
+				catch (ArgumentOutOfRangeException)
+				{
+					Debug.LogError($"Couldn't switch key on language '{languageMap.Language}' for '{name}'. The data may be malformed.", this);
+				}
+			}
+		}
+
 		public void AddLanguageMap(Language language)
 		{
 			if (Languages.Contains(language))

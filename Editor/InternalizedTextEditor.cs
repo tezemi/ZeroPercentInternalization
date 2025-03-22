@@ -111,6 +111,30 @@ namespace ZeroPercentInternalization.Editor
 				GUI.SetNextControlName($"TextArea{i}");
 				textEntries[i].Value = GUILayout.TextArea(value, textAreaGUIStyle);
 
+				if (i - 1 >= 0)
+				{
+					if (GUILayout.Button("▲", GUILayout.Width(20f)))
+					{
+						text.SwapKeyIndicesForAllLanguages(i, i - 1);
+					}
+				}
+				else
+				{
+					GUILayout.Space(23f);
+				}
+
+				if (i + 1 < textEntries.Count)
+				{
+					if (GUILayout.Button("▼", GUILayout.Width(20f)))
+					{
+						text.SwapKeyIndicesForAllLanguages(i, i + 1);
+					}
+				}
+				else
+				{
+					GUILayout.Space(23f);
+				}
+
 				if (GUILayout.Button("-", GUILayout.Width(20f)))
 				{
 					text.RemoveKeyForAllLanguages(i);
