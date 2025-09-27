@@ -139,6 +139,11 @@ namespace ZeroPercentInternalization.Editor
 				{
 					text.RemoveKeyForAllLanguages(i);
 				}
+				
+				if (i < textEntries.Count && !string.IsNullOrEmpty(textEntries[i].Value))
+					GUILayout.Label(textEntries[i].Value.Length.ToString(), GUILayout.Width(20f));
+				else
+					GUILayout.Label("0", GUILayout.Width(20f));
 
 				GUILayout.EndHorizontal();
 			}
